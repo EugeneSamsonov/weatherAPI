@@ -17,9 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 from weather.views import WeatherView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/weather/<slug:city>', WeatherView.as_view()),
+
+    path('api/register/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/register/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
