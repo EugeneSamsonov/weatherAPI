@@ -25,6 +25,7 @@ from rest_framework_simplejwt.views import (
 from rest_framework import routers
 
 from history.views import UserHistoryViewSet
+from users.views import UserRegisterAPIView
 from weather.views import WeatherView
 
 router = routers.SimpleRouter()
@@ -36,7 +37,7 @@ urlpatterns = [
 
     path('api/v1/', include(router.urls)),
 
-    #TODO add register view
+    path('api/register/', UserRegisterAPIView.as_view()),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
