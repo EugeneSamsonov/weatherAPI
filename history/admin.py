@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from users.models import User
+from history.models import UserHistory
 
 # Register your models here.
-@admin.register(User)
+@admin.register(UserHistory)
 class TaskAdmin(admin.ModelAdmin):
     pass

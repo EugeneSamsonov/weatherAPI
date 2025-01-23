@@ -47,7 +47,7 @@ INSTALLED_APPS = [
 
     'weather',
     'users',
-    # 'history',
+    'history',
 ]
 
 MIDDLEWARE = [
@@ -141,6 +141,9 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }

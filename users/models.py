@@ -10,4 +10,4 @@ class User(AbstractUser):
     
 
     def __str__(self) -> str:
-        return f"{self.username}"
+        return f"{self.pk} | {self.username}"

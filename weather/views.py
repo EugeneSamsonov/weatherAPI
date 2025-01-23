@@ -6,15 +6,17 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 
+from history.models import UserHistory
 from weather.utils import get_weather_data
 # Create your views here.
 class WeatherView(APIView):
-    def get(self, *args, **kwargs):
+    def get(self, request,  *args, **kwargs):
         load_dotenv(find_dotenv())
         weather_data = get_weather_data(kwargs.get('city'), os.getenv("WEATHER_API_TOKEN"))
 
         try:
             responce_data = {
+                'user': request.user.id,
                 'city': weather_data.get('name'),
 
                 'temp': weather_data["main"].get('temp'),
@@ -27,10 +29,18 @@ class WeatherView(APIView):
                 'weather': weather_data["weather"][0].get('main'),
                 'weather_desc': weather_data["weather"][0].get('description'),
 
+                # 'timestamp': datetime.fromtimestamp(weather_data.get('dt')).utcoffset(),
                 'timestamp': datetime.fromtimestamp(weather_data.get('dt')),
                 'sunrise': datetime.fromtimestamp(weather_data["sys"].get('sunrise')),
                 'sunset': datetime.fromtimestamp(weather_data["sys"].get('sunset')),
+
             }
+
+            if request.user.is_authenticated:
+                responce_data['user'] = request.user
+                UserHistory.objects.create(**responce_data)
+
+            responce_data['user'] = request.user.id
         except KeyError:
             responce_data = {
                 "error": weather_data["cod"],

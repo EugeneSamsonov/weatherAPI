@@ -15,19 +15,28 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
 
+from rest_framework import routers
+
+from history.views import UserHistoryViewSet
 from weather.views import WeatherView
+
+router = routers.SimpleRouter()
+router.register(r'history', UserHistoryViewSet, basename='history')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/weather/<slug:city>', WeatherView.as_view()),
 
-    path('api/register/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/register/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/v1/', include(router.urls)),
+
+    #TODO add register view
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
