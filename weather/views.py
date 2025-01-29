@@ -6,13 +6,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 
+from app import settings
 from history.models import UserHistory
 from weather.utils import get_weather_data
 # Create your views here.
 class WeatherView(APIView):
     def get(self, request,  *args, **kwargs):
-        load_dotenv(find_dotenv())
-        weather_data = get_weather_data(kwargs.get('city'), os.getenv("WEATHER_API_TOKEN"))
+        weather_data = get_weather_data(kwargs.get('city'), settings.WEATHER_API_TOKEN)
 
         try:
             responce_data = {
