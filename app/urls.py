@@ -33,11 +33,11 @@ router.register(r'history', UserHistoryViewSet, basename='history')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/weather/<slug:city>', WeatherView.as_view()),
+    path('api/v1/weather/<slug:city>', WeatherView.as_view(), name='weather_api'),
 
     path('api/v1/', include(router.urls)),
 
-    path('api/register/', UserRegisterAPIView.as_view()),
+    path('api/register/', UserRegisterAPIView.as_view(), name='register'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
