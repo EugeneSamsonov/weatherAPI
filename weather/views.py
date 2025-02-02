@@ -3,6 +3,7 @@ import os
 from dotenv import find_dotenv, load_dotenv
 
 from rest_framework.views import APIView
+from rest_framework import status
 from rest_framework.response import Response
 
 
@@ -44,7 +45,8 @@ class WeatherView(APIView):
         except KeyError:
             responce_data = {
                 "error": weather_data["cod"],
-                "error_message": weather_data["message"] 
+                "error_message": weather_data["message"]
             }
+            return Response(responce_data, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(responce_data)
+        return Response(responce_data, status=status.HTTP_200_OK)

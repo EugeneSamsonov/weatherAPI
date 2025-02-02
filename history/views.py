@@ -1,6 +1,7 @@
 from django.shortcuts import render
 
 from rest_framework.viewsets import GenericViewSet
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import mixins
 
 from history.models import UserHistory
@@ -15,6 +16,7 @@ class UserHistoryViewSet(
 
     
     serializer_class = UserHistorySerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return UserHistory.objects.filter(user__id=self.request.user.id)
