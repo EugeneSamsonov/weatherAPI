@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import mixins
 
 from history.models import UserHistory
+from history.pagination import HistoryResultsSetPagination
 from history.serializers import UserHistorySerializer
 # Create your views here.
 class UserHistoryViewSet(
@@ -19,6 +20,7 @@ class UserHistoryViewSet(
     
     serializer_class = UserHistorySerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = HistoryResultsSetPagination
 
     def get_queryset(self):
         cache_name = f"{self.request.user.id}_{datetime.now().day}_{datetime.now().hour}_{datetime.now().minute}"
