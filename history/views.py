@@ -1,4 +1,6 @@
+from datetime import datetime
 from django.shortcuts import render
+from django.core.cache import cache
 
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import IsAuthenticated
@@ -19,5 +21,13 @@ class UserHistoryViewSet(
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return UserHistory.objects.filter(user__id=self.request.user.id)
+        cache_name = f"{self.request.user.id}_{datetime.now().day}_{datetime.now().hour}_{datetime.now().minute}"
+
+        if cache_name in cache:
+            return cache.get(cache_name)
+        
+        data = UserHistory.objects.filter(user__id=self.request.user.id)
+        cache.set(cache_name, data, 60)  # for 4 min
+        return data
+    
     

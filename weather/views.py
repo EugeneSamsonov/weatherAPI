@@ -1,6 +1,6 @@
 from datetime import datetime
-import os
-from dotenv import find_dotenv, load_dotenv
+
+from django.core.cache import cache
 
 from rest_framework.views import APIView
 from rest_framework import status
@@ -16,6 +16,19 @@ class WeatherView(APIView):
         weather_data = get_weather_data(kwargs.get('city'), settings.WEATHER_API_TOKEN)
 
         try:
+            cache_name = f"{kwargs.get('city')}_{datetime.fromtimestamp(weather_data.get('dt'))}"
+
+            if cache_name in cache:
+                responce_data = cache.get(cache_name)
+
+                if request.user.is_authenticated:
+                    responce_data['user'] = request.user
+                    UserHistory.objects.get_or_create(**responce_data)
+                
+                responce_data['user'] = request.user.id
+                    
+                return Response(responce_data, status=status.HTTP_200_OK)
+
             responce_data = {
                 'user': request.user.id,
                 'city': weather_data.get('name'),
@@ -42,7 +55,10 @@ class WeatherView(APIView):
                 UserHistory.objects.create(**responce_data)
 
             responce_data['user'] = request.user.id
-        except KeyError:
+
+            cache.set(cache_name, responce_data, 4*60) # for 4 min
+
+        except (KeyError, TypeError):
             responce_data = {
                 "error": weather_data["cod"],
                 "error_message": weather_data["message"]
