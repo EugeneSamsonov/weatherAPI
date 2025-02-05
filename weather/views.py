@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.core.cache import cache
 
 from rest_framework.views import APIView
@@ -7,62 +5,32 @@ from rest_framework import status
 from rest_framework.response import Response
 
 
-from app import settings
 from history.models import UserHistory
 from weather.utils import get_weather_data
+
+
 # Create your views here.
 class WeatherView(APIView):
-    def get(self, request,  *args, **kwargs):
-        weather_data = get_weather_data(kwargs.get('city'), settings.WEATHER_API_TOKEN)
-
-        try:
-            cache_name = f"{kwargs.get('city')}_{datetime.fromtimestamp(weather_data.get('dt'))}"
-
-            if cache_name in cache:
-                responce_data = cache.get(cache_name)
-
-                if request.user.is_authenticated:
-                    responce_data['user'] = request.user
-                    UserHistory.objects.get_or_create(**responce_data)
-                
-                responce_data['user'] = request.user.id
-                    
-                return Response(responce_data, status=status.HTTP_200_OK)
-
-            responce_data = {
-                'user': request.user.id,
-                'city': weather_data.get('name'),
-
-                'temp': weather_data["main"].get('temp'),
-                'temp_max': weather_data["main"].get('temp_max'),
-                'temp_min': weather_data["main"].get('temp_min'),
-                'humidity': weather_data["main"].get('humidity'),
-                'wind_speed': weather_data["wind"].get('speed'),
-                'wind_direction': weather_data["wind"].get('deg'),
-
-                'weather': weather_data["weather"][0].get('main'),
-                'weather_desc': weather_data["weather"][0].get('description'),
-
-                # 'timestamp': datetime.fromtimestamp(weather_data.get('dt')).utcoffset(),
-                'timestamp': datetime.fromtimestamp(weather_data.get('dt')),
-                'sunrise': datetime.fromtimestamp(weather_data["sys"].get('sunrise')),
-                'sunset': datetime.fromtimestamp(weather_data["sys"].get('sunset')),
-
-            }
+    def get(self, request, *args, **kwargs):
+        cache_name = f"{kwargs.get('city')}"
+        if cache_name in cache:
+            responce_data = cache.get(cache_name)
 
             if request.user.is_authenticated:
-                responce_data['user'] = request.user
-                UserHistory.objects.create(**responce_data)
+                UserHistory.objects.get_or_create(
+                    **responce_data, user_id=request.user.id
+                )
 
-            responce_data['user'] = request.user.id
+            return Response(responce_data, status=status.HTTP_200_OK)
 
-            cache.set(cache_name, responce_data, 4*60) # for 4 min
+        responce_data = get_weather_data(kwargs.get("city"), request=request)
 
-        except (KeyError, TypeError):
-            responce_data = {
-                "error": weather_data["cod"],
-                "error_message": weather_data["message"]
-            }
+        if "error" in responce_data:
             return Response(responce_data, status=status.HTTP_400_BAD_REQUEST)
+
+        if request.user.is_authenticated:
+            UserHistory.objects.get_or_create(**responce_data, user_id=request.user.id)
+
+        cache.set(cache_name, responce_data, 10 * 60)  # for 4 min
 
         return Response(responce_data, status=status.HTTP_200_OK)
