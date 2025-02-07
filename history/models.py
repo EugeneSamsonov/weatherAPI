@@ -20,9 +20,9 @@ class UserHistory(models.Model):
     weather = models.CharField(max_length=255, verbose_name="Погода")
     weather_desc = models.TextField(verbose_name="Описание погоды")
 
-    timestamp = models.DateField(auto_now=False, auto_now_add=False)
-    sunrise = models.DateField(auto_now=False, auto_now_add=False)
-    sunset = models.DateField(auto_now=False, auto_now_add=False)
+    timestamp = models.DateTimeField(auto_now=False, auto_now_add=False)
+    sunrise = models.DateTimeField(auto_now=False, auto_now_add=False)
+    sunset = models.DateTimeField(auto_now=False, auto_now_add=False)
 
     class Meta:
         db_table = 'history'
