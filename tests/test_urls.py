@@ -11,15 +11,17 @@ from users.views import UserRegisterAPIView
 from weather.views import WeatherView
 
 
-class UrlsTests(SimpleTestCase):
+class UrlsTestCase(SimpleTestCase):
 
     def test_weather_url(self):
         url = reverse('weather_api', args=['city'])
         self.assertEqual(resolve(url).func.view_class, WeatherView)
 
-    # def test_url_history_list(self):
-    #     # url = '/api/v1/history/'
-    #     self.assertEqual(resolve(url).func, UserHistoryViewSet)
+    def test_url_history_list(self):
+        # url = '/api/v1/history/'
+        url = reverse('history-list')
+        from history.views import UserHistoryViewSet
+        self.assertEqual(resolve(url).func, UserHistoryViewSet)
     
     # def test_url_history_detail(self):
     #     url = '/api/v1/history/1/'

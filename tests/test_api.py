@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase
 from users.models import User
 
 
-class ViewsTests(APITestCase):
+class APITestCase(APITestCase):
 
     def setUp(self) -> None:
         self.user_data = {
@@ -16,21 +16,21 @@ class ViewsTests(APITestCase):
         }
         return super().setUp()
 
-    def test_get_weather_view(self):
+    def test_get_weather_api(self):
         url = reverse("weather_api", args=["Moscow"])
         result = self.client.get(url)
 
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.data["city"], "Moscow")
 
-    def test_get_weather_view_with_uncorrect_city(self):
+    def test_get_weather_api_with_uncorrect_city(self):
         url = reverse("weather_api", args=["uncorrect_city"])
         result = self.client.get(url)
 
         self.assertEqual(result.status_code, 400)
         self.assertEqual(result.data.get("error", None), "404")
 
-    def test_register_view(self):
+    def test_register_api(self):
         url = reverse("register")
         result = self.client.post(url, data=self.user_data, format="json")
 
@@ -39,7 +39,7 @@ class ViewsTests(APITestCase):
 
         self.assertEqual(user.username, self.user_data["username"])
 
-    def test_register_view_with_uncorrect_email(self):
+    def test_register_api_with_uncorrect_email(self):
         url = reverse("register")
         user_data = self.user_data
         user_data["email"] = "email@"
@@ -52,7 +52,7 @@ class ViewsTests(APITestCase):
             "Введите правильный адрес электронной почты.",
         )
 
-    def test_register_view_with_different_passwords(self):
+    def test_register_api_with_different_passwords(self):
         url = reverse("register")
         user_data = self.user_data
         user_data["password2"] = "password2"
@@ -123,7 +123,7 @@ class ViewsTests(APITestCase):
     def test_user_history(self):
         register_url = reverse("register")
         token_obtain_pair_url = reverse("token_obtain_pair")
-        user_history_url = "/api/v1/history/"
+        user_history_url = reverse("history-list")
 
         self.client.post(register_url, data=self.user_data, format="json")
         access_token = self.client.post(
