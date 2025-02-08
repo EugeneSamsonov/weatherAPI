@@ -31,6 +31,6 @@ class WeatherView(APIView):
         if request.user.is_authenticated:
             UserHistory.objects.get_or_create(**responce_data, user_id=request.user.id)
 
-        cache.set(cache_name, responce_data, 10 * 60)  # for 4 min
+        cache.set(cache_name, responce_data, 10 * 60)  # on 10 min
 
         return Response(responce_data, status=status.HTTP_200_OK)
