@@ -32,7 +32,9 @@ WEATHER_API_TOKEN = os.getenv("WEATHER_API_TOKEN")
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 # Application definition
 
@@ -44,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    "debug_toolbar",
     'rest_framework',
     'django_filters',
     'rest_framework_simplejwt',
@@ -62,13 +65,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -168,7 +172,7 @@ REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 'rest_framework.authentication.BasicAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
         
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),

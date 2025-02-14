@@ -24,6 +24,7 @@ from rest_framework_simplejwt.views import (
 
 from rest_framework import routers
 
+from app import settings
 from history.views import UserHistoryViewSet
 from users.views import UserRegisterAPIView
 from weather.views import WeatherView
@@ -41,3 +42,7 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
+
+if settings.DEBUG:
+    from debug_toolbar.toolbar import debug_toolbar_urls
+    urlpatterns += debug_toolbar_urls()
