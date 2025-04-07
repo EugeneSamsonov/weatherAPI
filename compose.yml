@@ -1,0 +1,47 @@
+services:
+  postgres:
+    image: postgres:17.4
+    volumes:
+      - ../volmes/pg:/var/lib/postgresql/data
+    restart: always
+    shm_size: 128mb
+    env_file:
+      - .env
+    networks:
+      - localnet
+
+  redis:
+    image: redis:7.4.2
+    ports:
+      - 6379:6379
+    expose:
+      - 6379
+    networks:
+      - localnet
+
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    image: weatherapi
+    container_name: weatherAPI
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - .env
+    ports:
+      - 8000:8000
+    networks:
+      - localnet
+      - internet
+    command: >
+      bash -c "python3 ./manage.py migrate && python3 ./manage.py runserver 0.0.0.0:8000"
+
+networks:
+  internet:
+    name: internet
+    driver: bridge
+  localnet:
+    name: localnet
+    driver: bridge

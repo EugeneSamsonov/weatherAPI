@@ -34,6 +34,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 INTERNAL_IPS = [
     "127.0.0.1",
+    "0.0.0.0",
 ]
 
 # Application definition
@@ -100,22 +101,23 @@ DATABASES = {
     # },
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': "weatherAPI",
-        'USER': "weatherAPI",
-        'PASSWORD': f"{os.getenv('DB_PASSWORD')}",
-        'HOST': "localhost",
-        'PORT': "5432",
+        'NAME': os.getenv("POSTGRES_DB", "db1"),
+        'USER': os.getenv("POSTGRES_USER", "user"),
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
+        'HOST': os.getenv("POSTGRES_HOST", "localhost"),
+        'PORT': os.getenv("POSTGRES_PORT", 5432),
     }
 }
 
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",  # 1 - номер базы Redis
+        "LOCATION": "redis://redis:6379/1",
+        # "LOCATION": "redis://127.0.0.1:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
-        "KEY_PREFIX": "weatherAPI"  # Префикс для ключей
+        "KEY_PREFIX": os.getenv("REDIS_KEY_PREFIX", "app_"),
     }
 }
 
@@ -173,7 +175,7 @@ REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
         
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
