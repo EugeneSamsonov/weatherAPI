@@ -162,7 +162,7 @@ class APITestCase(APITestCase):
         get_user_history_url = "/api/v1/history/"
         get_user_history = self.client.get(get_user_history_url)
 
-        self.assertEqual(get_user_history.status_code, 401)
+        self.assertEqual(get_user_history.status_code, 403)
         self.assertEqual(
             get_user_history.data["detail"], "Учетные данные не были предоставлены."
         )
